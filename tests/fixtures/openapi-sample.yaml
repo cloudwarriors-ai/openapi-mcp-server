@@ -1,0 +1,171 @@
+openapi: "3.0.0"
+info:
+  title: Hermes API (Test Fixture)
+  version: "1.0.0"
+  description: Sample OpenAPI spec for testing
+
+tags:
+  - name: auth
+    description: Authentication endpoints
+  - name: servers
+    description: Server management
+  - name: workflows
+    description: Workflow orchestration
+
+paths:
+  /api/auth/status:
+    get:
+      operationId: getAuthStatus
+      summary: Get authentication status
+      description: Returns the current authentication state and user info
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Authentication status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authenticated:
+                    type: boolean
+                  user:
+                    type: object
+
+  /api/auth/login:
+    post:
+      operationId: login
+      summary: Login with credentials
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login successful
+        "401":
+          description: Invalid credentials
+
+  /api/servers:
+    get:
+      operationId: listServers
+      summary: List all servers
+      tags:
+        - servers
+      parameters:
+        - name: status
+          in: query
+          description: Filter by server status
+          schema:
+            type: string
+            enum:
+              - running
+              - stopped
+              - error
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: List of servers
+
+    post:
+      operationId: createServer
+      summary: Create a new server
+      tags:
+        - servers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                config:
+                  type: object
+      responses:
+        "201":
+          description: Server created
+        "400":
+          description: Invalid request
+
+  /api/servers/{id}:
+    get:
+      operationId: getServer
+      summary: Get server by ID
+      tags:
+        - servers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Server ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Server details
+        "404":
+          description: Server not found
+
+    delete:
+      operationId: deleteServer
+      summary: Delete a server
+      tags:
+        - servers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Server deleted
+        "404":
+          description: Server not found
+
+  /api/workflows:
+    get:
+      operationId: listWorkflows
+      summary: List all workflows
+      tags:
+        - workflows
+      responses:
+        "200":
+          description: List of workflows
+
+  /api/events/stream:
+    get:
+      operationId: eventStream
+      summary: Subscribe to server events (SSE)
+      description: Real-time event stream via Server-Sent Events
+      tags:
+        - events
+      responses:
+        "200":
+          description: Event stream
+          content:
+            text/event-stream:
+              schema:
+                type: string

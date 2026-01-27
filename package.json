@@ -1,0 +1,50 @@
+{
+  "name": "@cloudwarriors/openapi-mcp",
+  "version": "1.0.0",
+  "description": "Generic MCP server that exposes any OpenAPI-documented REST API to LLMs",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "openapi-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "test:unit": "vitest run --dir tests/unit",
+    "test:watch": "vitest watch"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "yaml": "^2.3.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^1.6.0"
+  },
+  "keywords": [
+    "mcp",
+    "openapi",
+    "swagger",
+    "api-client",
+    "claude",
+    "llm",
+    "model-context-protocol",
+    "rest-api"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloudwarriors-ai/openapi-mcp.git"
+  },
+  "license": "MIT",
+  "author": "CloudWarriors"
+}
