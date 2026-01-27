@@ -140,6 +140,7 @@ export function registerDiscoverTool(ctx: ToolContext) {
               text: `Failed to discover endpoints: ${error instanceof Error ? error.message : String(error)}`,
             },
           ],
+          isError: true,
         };
       }
     }

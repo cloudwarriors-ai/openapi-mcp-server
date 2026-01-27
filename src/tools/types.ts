@@ -1,5 +1,5 @@
 /**
- * Tool-related types for Hermes API MCP Server
+ * Tool-related types for OpenAPI MCP Server
  */
 
 import type { ToolDependencies } from "../types.js";

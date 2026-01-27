@@ -185,6 +185,7 @@ export function registerRequestTool(ctx: ToolContext) {
               text: formatError(error instanceof Error ? error : new Error(String(error))),
             },
           ],
+          isError: true,
         };
       }
     }

@@ -11,9 +11,10 @@ import {
   RateLimitError,
   NetworkError,
 } from "../errors/index.js";
+import { fetchWithTimeout, isTimeoutError } from "./fetch-with-timeout.js";
 
 /**
- * HTTP client for API requests
+ * HTTP client implementation for API requests
  */
 export class ApiHttpClient implements HttpClient {
   private readonly config: Config;
@@ -73,18 +74,13 @@ export class ApiHttpClient implements HttpClient {
     body: unknown | undefined,
     timeout: number
   ): Promise<ApiResponse<T>> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
     try {
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,
-        signal: controller.signal,
+        timeoutMs: timeout,
       });
-
-      clearTimeout(timeoutId);
 
       // Extract headers
       const responseHeaders: Record<string, string> = {};
@@ -136,8 +132,6 @@ export class ApiHttpClient implements HttpClient {
         headers: responseHeaders,
       };
     } catch (error) {
-      clearTimeout(timeoutId);
-
       if (
         error instanceof ApiError ||
         error instanceof AuthenticationError ||
@@ -146,10 +140,11 @@ export class ApiHttpClient implements HttpClient {
         throw error;
       }
 
+      if (isTimeoutError(error)) {
+        throw new NetworkError(url, `Request timed out after ${timeout}ms`);
+      }
+
       if (error instanceof Error) {
-        if (error.name === "AbortError") {
-          throw new NetworkError(url, `Request timed out after ${timeout}ms`);
-        }
         throw new NetworkError(url, error.message, error);
       }
 

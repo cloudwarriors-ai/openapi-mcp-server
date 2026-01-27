@@ -23,7 +23,7 @@ export class FileSpecCache implements SpecCache {
   private readonly cachePath: string;
 
   constructor(cacheDir?: string) {
-    const dir = cacheDir || join(tmpdir(), "hermes-api-mcp");
+    const dir = cacheDir || join(tmpdir(), "openapi-mcp");
     this.cachePath = join(dir, "openapi-cache.json");
   }
 
@@ -62,7 +62,7 @@ export class FileSpecCache implements SpecCache {
     } catch (error) {
       // Cache write failures are non-fatal
       console.error(
-        "[hermes-api-mcp] Failed to write cache:",
+        "[openapi-mcp] Failed to write cache:",
         error instanceof Error ? error.message : error
       );
     }

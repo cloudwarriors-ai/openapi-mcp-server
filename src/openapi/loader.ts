@@ -4,6 +4,7 @@
 
 import { OpenAPISpecError, NetworkError } from "../errors/index.js";
 import type { Config } from "../config.js";
+import { fetchWithTimeout, isTimeoutError } from "../http/fetch-with-timeout.js";
 
 /**
  * Interface for spec loading (allows mocking in tests)
@@ -25,19 +26,14 @@ export class HttpSpecLoader implements SpecLoader {
   }
 
   async fetch(): Promise<string> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeoutMs);
-
     try {
-      const response = await fetch(this.url, {
+      const response = await fetchWithTimeout(this.url, {
         method: "GET",
         headers: {
           Accept: "application/yaml, application/x-yaml, text/yaml, text/plain",
         },
-        signal: controller.signal,
+        timeoutMs: this.timeoutMs,
       });
-
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new OpenAPISpecError(
@@ -57,19 +53,18 @@ export class HttpSpecLoader implements SpecLoader {
 
       return await response.text();
     } catch (error) {
-      clearTimeout(timeoutId);
-
       if (error instanceof OpenAPISpecError) {
         throw error;
       }
 
+      if (isTimeoutError(error)) {
+        throw new NetworkError(
+          this.url,
+          `Request to ${this.url} timed out after ${this.timeoutMs}ms`
+        );
+      }
+
       if (error instanceof Error) {
-        if (error.name === "AbortError") {
-          throw new NetworkError(
-            this.url,
-            `Request to ${this.url} timed out after ${this.timeoutMs}ms`
-          );
-        }
         throw new OpenAPISpecError("fetch_failed", error.message);
       }
 

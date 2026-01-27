@@ -8,7 +8,7 @@ import { registerDiscoverTool } from "./discover.js";
 import { registerRequestTool } from "./request.js";
 
 /**
- * Register all Hermes API tools with the MCP server
+ * Register all API tools with the MCP server
  */
 export function registerAllTools(deps: ToolDependencies): void {
   const ctx: ToolContext = { deps };
