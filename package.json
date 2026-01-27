@@ -1,5 +1,5 @@
 {
-  "name": "@cloudwarriors/openapi-mcp",
+  "name": "@cloudwarriors-ai/openapi-mcp",
   "version": "1.0.0",
   "description": "Generic MCP server that exposes any OpenAPI-documented REST API to LLMs",
   "type": "module",
